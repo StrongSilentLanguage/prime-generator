@@ -1,6 +1,9 @@
-import csv,time,shutil
+import csv,time,shutil,os
 
-shutil.copy("primes.csv","primes.csv.bkp")
+if os.path.exists():
+    shutil.copy("primes.csv","primes.csv.bkp")
+
+
 
 # m = 2 #Default starting point for search
 # primes = []
@@ -63,7 +66,7 @@ try:
         print("Starting from"+ str(max_value_found))
         generate_primes(max_value_found)
 except:
-    generate_primes(2) #If there is no such file found, call function as normal, minimum defaulted as 2
+    generate_primes(1) #If there is no such file found, call function as normal, minimum defaulted as 2
 
 #primes = generate_primes(m,maximum_number)
 #print(primes)
