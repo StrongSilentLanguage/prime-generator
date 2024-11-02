@@ -23,7 +23,7 @@ def generate_primes(m):
         if prime_test(num):
             number_primes_found += 1
             primes.append(num)
-            #print(num)
+            #print(num) #Commented out because it is so voluminous, but it is fun to see so I've left it here. Just uncomment it if you want to see the numbers fly by
             # Writing list every 10 minutes in order to not lose progress, then empties list to prevent memory filling up
             if time.time() - last_save > 600:
                 print("Saving")
@@ -52,7 +52,7 @@ try:
             #primes.append(int(n[0]))
         #m = primes[-1]
         # print("Starting from"+ str(primes[-1]))
-        print("Starting from"+ str(max_value_found))
+        print("Starting from "+ str(max_value_found))
         generate_primes(max_value_found)
 except:
     generate_primes(1) #If there is no such file found, call function as normal, passing 1 (becomes 2)
