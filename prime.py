@@ -1,7 +1,7 @@
 import csv,time,shutil,os
 
 #Creates backup of existing primes.csv to prevent losing progress from error
-if os.path.exists():
+if os.path.exists("primes.csv"):
     shutil.copy("primes.csv","primes.csv.bkp")
 
 #For each number, this divides it by all numbers from 2 to sqrt(number)+1. If it's divisible by any of them, the number is rejected
