@@ -8,6 +8,8 @@ if os.path.exists("primes.csv"):
 def prime_test(n):
     if n <= 1:
         return False
+    if n == 2 or n == 3:
+        return True
     for i in range(2, int(n ** 0.5) + 1):
         if n % i == 0:
             return False
@@ -42,7 +44,7 @@ def write_list(working_list):
 
 #Checks if primes.csv exists, then either takes the last value as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
 try:
-    with open('primes.csv', 'r') as csvfile: #Opens file indicated by maximum
+    with open('primes.csv', 'r') as csvfile:
         max_value_found = 0
         reader = csv.reader(csvfile)
         for n in reader:
