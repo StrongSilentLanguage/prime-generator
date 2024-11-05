@@ -1,9 +1,5 @@
 import csv,time,shutil,os
 
-#Creates backup of existing primes.csv to prevent losing progress from error
-if os.path.exists("primes.csv"):
-    shutil.copy("primes.csv","primes.csv.bkp")
-
 #For each number, this divides it by all numbers from 2 to sqrt(number)+1. If it's divisible by any of them, the number is rejected
 def prime_test(n):
     if n <= 1:
@@ -44,9 +40,33 @@ def write_list(working_list):
         for n in working_list:
             wr.writerow([int(n)])
 
-#Checks if primes.csv exists, then either takes the last value as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
-try:
-    with open('primes.csv', 'r') as csvfile:
+def tail_seek(fName, num, bufr=2 ** 24):
+    import os
+    if bufr < 2 ** 10: bufr = 2 ** 10
+    fsize = os.stat(fName).st_size
+    offset = 0
+    lines = []
+    if fsize < bufr:
+        return tail(fName, num)
+    with open(fName) as f:
+        while True:
+            offset += 1
+            if bufr * offset <= fsize:
+                f.seek(fsize - bufr * offset)
+                lines.extend(f.readlines())
+                if len(lines) >= num + 1 or f.tell() == 0:
+                    break
+            else:
+                break
+    return lines[-num:]
+
+#Creates backup of existing primes.csv to prevent losing progress from error
+if os.path.exists("primes.csv"):
+    shutil.copy("primes.csv", "primes.csv.bkp")
+    # Checks if primes.csv exists, then either takes the last value as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
+    max_value_list = tail_seek("primes.csv", 1)
+    max_value_found = int(max_value_list[0])
+    '''with open('primes.csv', 'r') as csvfile:
         max_value_found = 0
         reader = csv.reader(csvfile)
         for n in reader:
@@ -56,7 +76,9 @@ try:
             #primes.append(int(n[0]))
         #m = primes[-1]
         # print("Starting from"+ str(primes[-1]))
-        print("Starting from "+ str(max_value_found))
-        generate_primes(max_value_found)
-except:
+    '''
+    print("Starting from "+ str(max_value_found))
+    generate_primes(max_value_found)
+else:
     generate_primes(1) #If there is no such file found, call function as normal, passing 1 (becomes 2)
+
