@@ -10,13 +10,9 @@ def prime_test(n):
         return False
     if n == 2 or n == 3:
         return True
-    for i in range(2, int(n ** 0.5) + 1):
-        if i > 2 and i % 2 == 0: #For even factors larger than 2, skip checking because if not eliminated by checking 2 it won't be divisble by 2k
-            continue
-        if i > 3 and i % 3 == 0: #Similar to 2 above, seiving for 3-divisible factors > 3
-            continue
-        if i > 5 and i % 5 == 0: #Similar to 2 and 3 above, seiving for 5-divisible factors > 5
-            continue
+    if n > 2 and n % 2 == 0:
+        return False
+    for i in range(3, int(n ** 0.5) + 1,2):
         if n % i == 0:
             return False
     return True
@@ -31,7 +27,7 @@ def generate_primes(m):
         if prime_test(num):
             number_primes_found += 1
             primes.append(num)
-            print(num) #Commented out because it is so voluminous, but it is fun to see so I've left it here. Just uncomment it if you want to see the numbers fly by
+            #print(num) #Commented out because it is so voluminous, but it is fun to see so I've left it here. Just uncomment it if you want to see the numbers fly by
             # Writing list every 10 minutes in order to not lose progress, then empties list to prevent memory filling up
             if time.time() - last_save > 600:
                 print("Saving")

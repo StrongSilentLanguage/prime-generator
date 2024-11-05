@@ -8,7 +8,8 @@ with open('primes.csv', 'r') as csvfile:
         primes.append(int(n[0]))
 
 primes.sort()
-print(len(primes))
+start_length = len(primes)
+print("Starting length: "+ str(len(primes)))
 
 for n in range (0,len(primes) - 1):
     while primes[n] == primes[n+1]:
@@ -22,3 +23,5 @@ with open('primes.csv', 'w') as myfile:
         wr.writerow([int(n)])
 
 print("Finished.")
+print("Ending length: "+ str(len(primes)))
+print("Removed: "+ str(start_length - len(primes)))
