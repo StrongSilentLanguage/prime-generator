@@ -6,7 +6,7 @@ def prime_test(n):
         return False
     if n == 2 or n == 3:
         return True
-    if n > 2 and n % 2 == 0:
+    if n > 2 and n % 2 == 0: #Checks if candidate is even, as the "2-step" process below otherwise skips them to save unnecessary compute
         return False
     for i in range(3, int(n ** 0.5) + 1,2):
         if n % i == 0:
@@ -40,6 +40,7 @@ def write_list(working_list):
         for n in working_list:
             wr.writerow([int(n)])
 
+#Pulls out last value from primes.csv in a memory-efficient way
 def tail_seek(fName, num, bufr=2 ** 24):
     import os
     if bufr < 2 ** 10: bufr = 2 ** 10
@@ -60,25 +61,13 @@ def tail_seek(fName, num, bufr=2 ** 24):
                 break
     return lines[-num:]
 
-#Creates backup of existing primes.csv to prevent losing progress from error
 if os.path.exists("primes.csv"):
-    shutil.copy("primes.csv", "primes.csv.bkp")
+    shutil.copy("primes.csv", "primes.csv.bkp") #Creates backup of existing primes.csv to prevent losing progress from error
     # Checks if primes.csv exists, then either takes the last value as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
     max_value_list = tail_seek("primes.csv", 1)
-    max_value_found = int(max_value_list[0])
-    '''with open('primes.csv', 'r') as csvfile:
-        max_value_found = 0
-        reader = csv.reader(csvfile)
-        for n in reader:
-            n = int(n[0])
-            if n > max_value_found:
-                max_value_found = n
-            #primes.append(int(n[0]))
-        #m = primes[-1]
-        # print("Starting from"+ str(primes[-1]))
-    '''
+    max_value_found = int(max_value_list[0]) #turns the last prime in primes.csv into an integer rather than a list item
     print("Starting from "+ str(max_value_found))
-    generate_primes(max_value_found)
+    generate_primes(max_value_found) #Starts the prime-generation process, passing the last value in primes.csv as the starting value
 else:
     generate_primes(1) #If there is no such file found, call function as normal, passing 1 (becomes 2)
 

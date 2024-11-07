@@ -10,17 +10,12 @@ with open('primes.csv', 'r') as csvfile:
 
 print(primes[-1])
 
-#print(primes)  # [[header1, header2, ...], [row1], [row2], ...]
-
-random1 = random.randint(0,len(primes))
-random2 = random.randint(0,len(primes))
-
-factor1 = primes[random1]
-factor2 = primes[random2]
+# Generates random factors from list of primes (the "private key), then multiplies them together to generate a product (the "public key")
+factor1 = primes[random.randint(0,len(primes))]
+factor2 = primes[random.randint(0,len(primes))]
 product = int(factor1 * factor2)
 
-print(product)
-#print(str(factor1)+", "+ str(factor2))
+print("Product: "+ str(product))
 
 for i in range(2, int(product ** 0.5) + 1):
     if product % i == 0:
