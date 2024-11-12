@@ -37,9 +37,9 @@ with open('primes.csv', 'r') as csvfile:
         if iteration % 1000000 == 0:
             num = int(n[0])
             print(f"Testing {num:,d}") #Basically a progress meter
-            print(f"Up to row: {iteration + starting_point:,d}") #Gives periodic update on row number for later re-starts
+            print(f"Up to row: {1000000 + starting_point:,d}") #Gives periodic update on row number for later re-starts
             if os.path.exists("scan_start.json"):
-                    starting_point = data2["key"] + iteration
+                    starting_point = data2["key"] + 1000000
                     data2.update({"key": starting_point})
                     out_file = open("scan_start.json", "w")
                     json.dump(data2, out_file)
