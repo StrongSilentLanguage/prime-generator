@@ -1,7 +1,4 @@
-import csv
-import os.path
-import json
-import time
+import csv, os.path, json, time, alive_progress
 
 iteration = 0
 starting_point = 0
@@ -34,27 +31,31 @@ with open('primes.csv', 'r') as csvfile:
     for _ in range(starting_point): #Skips first number of rows to make scanning large files easier. Do need to note stop point in previous runs though
         next(reader)
     print(f"Starting at row: {starting_point:,d}")
-    for n in reader:
-        iteration += 1
-        if iteration % reporting_interval == 0: #Every reporting_interval rows, updates starting scan value and updates user on progress
-            num = int(n[0])
-            print(f"Testing {num:,d}") #Basically a progress meter
-            print(f"Up to row: {reporting_interval + starting_point:,d}") #Progress update for user
-            print(f"Time since last update {time.time()-last_report_time:,.2f} seconds")
-            print(f"Checking {reporting_interval/int((time.time()-last_report_time)):,.2f} rows per second")
-            last_report_time = time.time()
-            if os.path.exists("scan_start.json"): #Updates json for future scans so it doesn't scan the same part over and over
-                    starting_point = data2["key"] + reporting_interval
-                    data2.update({"key": starting_point})
-                    out_file = open("scan_start.json", "w")
-                    json.dump(data2, out_file)
+    with alive_progress.alive_bar() as bar: #Progrss bar thingy
+        for n in reader:
+            iteration += 1
+            if iteration % reporting_interval == 0: #Every reporting_interval rows, updates starting scan value and updates user on progress
+                num = int(n[0])
+                print(f"Testing {num:,d}") #Basically a progress meter
+                print(f"Up to row: {reporting_interval + starting_point:,d}") #Progress update for user
+                print(f"Time since last update {time.time()-last_report_time:,.2f} seconds")
+                print(f"Checking {reporting_interval/int((time.time()-last_report_time)):,.2f} rows per second")
+                print("******************************") #Makes it easier to separate out different output instances
+                last_report_time = time.time()
+                if os.path.exists("scan_start.json"): #Updates json for future scans so it doesn't scan the same part over and over
+                        starting_point = data2["key"] + reporting_interval
+                        data2.update({"key": starting_point})
+                        out_file = open("scan_start.json", "w")
+                        json.dump(data2, out_file)
+                        out_file.close()
+                else:
+                    out_file = open("scan_start.json", "w") #If no scan_start file found/this is the first run, creates it
+                    data = {"key": iteration}
+                    json.dump(data, out_file)
                     out_file.close()
-            else:
-                out_file = open("scan_start.json", "w") #If no scan_start file found/this is the first run, creates it
-                data = {"key": iteration}
-                json.dump(data, out_file)
-                out_file.close()
-        if prime_test(int(n[0])) is False: #In case there's a composite found, alert the user
-            print(str(num)+ " is composite.")
+            if prime_test(int(n[0])) is False: #In case there's a composite found, alert the user
+                print(str(num)+ " is composite.")
+
+            bar() #Adds progress bar down the bottom
 
 print("Finished.")
