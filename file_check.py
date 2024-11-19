@@ -1,9 +1,12 @@
 import csv
 import os.path
 import json
+import time
 
 iteration = 0
 starting_point = 0
+last_report_time = time.time()
+reporting_interval = 1000000 #How often do you want the script to update you, in rows processed
 
 def prime_test(n):
     #print(n)
@@ -33,12 +36,15 @@ with open('primes.csv', 'r') as csvfile:
     print(f"Starting at row: {starting_point:,d}")
     for n in reader:
         iteration += 1
-        if iteration % 1000000 == 0: #Every million rows, updates starting scan value and updates user on progress
+        if iteration % reporting_interval == 0: #Every million rows by default, updates starting scan value and updates user on progress
             num = int(n[0])
             print(f"Testing {num:,d}") #Basically a progress meter
-            print(f"Up to row: {1000000 + starting_point:,d}") #Progress update for user
+            print(f"Up to row: {reporting_interval + starting_point:,d}") #Progress update for user
+            print(f"Time since last update {time.time()-last_report_time:,d} seconds")
+            print(f"Checking {reporting_interval/(time.time()-last_report_time):,d} rows per second")
+            last_report_time = time.time()
             if os.path.exists("scan_start.json"): #Updates json for future scans so it doesn't scan the same part over and over
-                    starting_point = data2["key"] + 1000000
+                    starting_point = data2["key"] + reporting_interval
                     data2.update({"key": starting_point})
                     out_file = open("scan_start.json", "w")
                     json.dump(data2, out_file)
