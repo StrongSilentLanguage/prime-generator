@@ -6,7 +6,7 @@ import time
 iteration = 0
 starting_point = 0
 last_report_time = time.time()
-reporting_interval = 1000000 #How often do you want the script to update you, in rows processed
+reporting_interval = 100000 #How often do you want the script to update you, in rows processed
 
 def prime_test(n):
     #print(n)
@@ -36,12 +36,12 @@ with open('primes.csv', 'r') as csvfile:
     print(f"Starting at row: {starting_point:,d}")
     for n in reader:
         iteration += 1
-        if iteration % reporting_interval == 0: #Every million rows by default, updates starting scan value and updates user on progress
+        if iteration % reporting_interval == 0: #Every reporting_interval rows, updates starting scan value and updates user on progress
             num = int(n[0])
             print(f"Testing {num:,d}") #Basically a progress meter
             print(f"Up to row: {reporting_interval + starting_point:,d}") #Progress update for user
-            print(f"Time since last update {time.time()-last_report_time:,d} seconds")
-            print(f"Checking {reporting_interval/(time.time()-last_report_time):,d} rows per second")
+            print(f"Time since last update {time.time()-last_report_time:,.2f} seconds")
+            print(f"Checking {reporting_interval/int((time.time()-last_report_time)):,.2f} rows per second")
             last_report_time = time.time()
             if os.path.exists("scan_start.json"): #Updates json for future scans so it doesn't scan the same part over and over
                     starting_point = data2["key"] + reporting_interval
@@ -53,6 +53,7 @@ with open('primes.csv', 'r') as csvfile:
                 out_file = open("scan_start.json", "w") #If no scan_start file found/this is the first run, creates it
                 data = {"key": iteration}
                 json.dump(data, out_file)
+                out_file.close()
         if prime_test(int(n[0])) is False: #In case there's a composite found, alert the user
             print(str(num)+ " is composite.")
 
