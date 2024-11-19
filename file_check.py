@@ -19,13 +19,12 @@ def prime_test(n):
     return True
 
 
-if os.path.exists("scan_start.json"):
+if os.path.exists("scan_start.json"): #Checks if scan_start file exists, created by past runnings
     with open("scan_start.json","r") as f:
         data2 = json.load(f)
-        #print(data2["key"])
-        starting_point = data2["key"]
+        starting_point = data2["key"] #Sets starting point as key value in that file
 else:
-    starting_point = 0
+    starting_point = 0 #If the file doesn't exist, starts at first value in primes.csv
 
 with open('primes.csv', 'r') as csvfile:
     reader = csv.reader(csvfile)
@@ -34,19 +33,21 @@ with open('primes.csv', 'r') as csvfile:
     print(f"Starting at row: {starting_point:,d}")
     for n in reader:
         iteration += 1
-        if iteration % 1000000 == 0:
+        if iteration % 1000000 == 0: #Every million rows, updates starting scan value and updates user on progress
             num = int(n[0])
             print(f"Testing {num:,d}") #Basically a progress meter
-            print(f"Up to row: {1000000 + starting_point:,d}") #Gives periodic update on row number for later re-starts
-            if os.path.exists("scan_start.json"):
+            print(f"Up to row: {1000000 + starting_point:,d}") #Progress update for user
+            if os.path.exists("scan_start.json"): #Updates json for future scans so it doesn't scan the same part over and over
                     starting_point = data2["key"] + 1000000
                     data2.update({"key": starting_point})
                     out_file = open("scan_start.json", "w")
                     json.dump(data2, out_file)
                     out_file.close()
             else:
-                out_file = open("scan_start.json", "w")
+                out_file = open("scan_start.json", "w") #If no scan_start file found/this is the first run, creates it
                 data = {"key": iteration}
                 json.dump(data, out_file)
         if prime_test(int(n[0])) is False: #In case there's a composite found, alert the user
             print(str(num)+ " is composite.")
+
+print("Finished.")

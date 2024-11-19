@@ -30,7 +30,7 @@ def generate_primes(m):
                 write_list(primes)
                 primes = []
                 last_save = time.time()
-                print("Found "+ str(number_primes_found)+" so far this run")
+                print(f"Found {number_primes_found:,d} so far this run")
         num += 1
 
 #Writes prime list to primes.csv
@@ -40,15 +40,14 @@ def write_list(working_list):
         for n in working_list:
             wr.writerow([int(n)])
 
-#Pulls out last value from primes.csv in a memory-efficient way
+#Pulls out last value from primes.csv in a memory-efficient way. Stole this code, so I don't understand it very well
 def tail_seek(fName, num, bufr=2 ** 24):
-    import os
     if bufr < 2 ** 10: bufr = 2 ** 10
     fsize = os.stat(fName).st_size
     offset = 0
     lines = []
     if fsize < bufr:
-        return tail(fName, num)
+        return tail_seek(fName, num)
     with open(fName) as f:
         while True:
             offset += 1
@@ -61,12 +60,12 @@ def tail_seek(fName, num, bufr=2 ** 24):
                 break
     return lines[-num:]
 
+# Checks if primes.csv exists, then either takes the last value as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
 if os.path.exists("primes.csv"):
     shutil.copy("primes.csv", "primes.csv.bkp") #Creates backup of existing primes.csv to prevent losing progress from error
-    # Checks if primes.csv exists, then either takes the last value as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
     max_value_list = tail_seek("primes.csv", 1)
     max_value_found = int(max_value_list[0]) #turns the last prime in primes.csv into an integer rather than a list item
-    print("Starting from "+ str(max_value_found))
+    print(f"Starting from {max_value_found:,d}")
     generate_primes(max_value_found) #Starts the prime-generation process, passing the last value in primes.csv as the starting value
 else:
     generate_primes(1) #If there is no such file found, call function as normal, passing 1 (becomes 2)
