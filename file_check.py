@@ -18,26 +18,34 @@ def prime_test(n):
             return False
     return True
 
+#Gets length of file to be checked and assigns it to num_lines variable
+with open('primes.csv', 'r') as file:
+    reader = csv.reader(file)
+    num_lines = sum(1 for _ in reader)
+    file.close()
 
 if os.path.exists("scan_start.json"): #Checks if scan_start file exists, created by past runnings
     with open("scan_start.json","r") as f:
         data2 = json.load(f)
         starting_point = data2["key"] #Sets starting point as key value in that file
+        f.close()
 else:
     starting_point = 0 #If the file doesn't exist, starts at first value in primes.csv
+
+remaining_to_check = int(num_lines - starting_point)
 
 with open('primes.csv', 'r') as csvfile:
     reader = csv.reader(csvfile)
     for _ in range(starting_point): #Skips first number of rows to make scanning large files easier. Do need to note stop point in previous runs though
         next(reader)
-    print(f"Starting at row: {starting_point:,d}")
-    with alive_progress.alive_bar() as bar: #Progrss bar thingy
+    print(f"Starting at row: {starting_point:,d} of {num_lines:,d}")
+    with alive_progress.alive_bar(remaining_to_check) as bar: #Progrss bar thingy
         for n in reader:
             iteration += 1
             if iteration % reporting_interval == 0: #Every reporting_interval rows, updates starting scan value and updates user on progress
                 num = int(n[0])
                 print(f"Testing {num:,d}") #Basically a progress meter
-                print(f"Up to row: {reporting_interval + starting_point:,d}") #Progress update for user
+                print(f"Up to row: {reporting_interval + starting_point:,d} of {num_lines:,d}") #Progress update for user
                 print(f"Time since last update {time.time()-last_report_time:,.2f} seconds")
                 print(f"Checking {reporting_interval/int((time.time()-last_report_time)):,.2f} rows per second")
                 print("******************************") #Makes it easier to separate out different output instances
