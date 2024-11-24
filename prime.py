@@ -1,14 +1,17 @@
-import csv,time,shutil,os
+import csv,time,shutil,os,alive_progress
+
+print(f"Starting at {time.ctime()}")
+interval = 600
 
 #For each number, this divides it by all numbers from 2 to sqrt(number)+1. If it's divisible by any of them, the number is rejected
 def prime_test(n):
     if n <= 1:
         return False
-    if n == 2 or n == 3:
+    if n == 2 or n == 3 or n == 5:
         return True
-    if n > 2 and n % 2 == 0: #Checks if candidate is even, as the "2-step" process below otherwise skips them to save unnecessary compute
+    if n % 2 == 0 or n % 3 == 0 or n % 5 == 0: #Checks if divisible by 2,3, or 5 - should eliminate ~3/4 of all candidates for speed. Stopping at 5 seems to hit the sweet spot in terms of computation
         return False
-    for i in range(3, int(n ** 0.5) + 1,2):
+    for i in range(7, int(n ** 0.5) + 1,2):
         if n % i == 0:
             return False
     return True
@@ -25,12 +28,14 @@ def generate_primes(m):
             primes.append(num)
             #print(num) #Commented out because it is so voluminous, but it is fun to see so I've left it here. Just uncomment it if you want to see the numbers fly by
             # Writing list every 10 minutes in order to not lose progress, then empties list to prevent memory filling up
-            if time.time() - last_save > 600:
+            if time.time() - last_save > interval:
                 print("Saving")
                 write_list(primes)
+                print(f"Found {len(primes)/interval:,.2f} numbers per second")
                 primes = []
                 last_save = time.time()
                 print(f"Found {number_primes_found:,d} so far this run")
+                print("***************************")
         num += 1
 
 #Writes prime list to primes.csv
@@ -39,6 +44,7 @@ def write_list(working_list):
         wr = csv.writer(myfile)
         for n in working_list:
             wr.writerow([int(n)])
+    myfile.close()
 
 #Pulls out last value from primes.csv in a memory-efficient way. Stole this code, so I don't understand it very well
 def tail_seek(fName, num, bufr=2 ** 24):
