@@ -45,6 +45,16 @@ def write_list(working_list):
         for n in working_list:
             wr.writerow([int(n)])
     myfile.close()
+    filename = 'primes.csv'
+    with open(filename, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        num_lines = sum(1 for _ in reader)
+        csvfile.close()
+    print(f"Total length of primes.csv: {num_lines:,d}")
+    max_value_list = tail_seek("primes.csv", 1)
+    max_value_found = int(
+        max_value_list[0])
+    print(f"Highest prime found: {max_value_found:,d}")
 
 #Pulls out last value from primes.csv in a memory-efficient way. Stole this code, so I don't understand it very well
 def tail_seek(fName, num, bufr=2 ** 24):
