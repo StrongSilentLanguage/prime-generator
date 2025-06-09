@@ -39,7 +39,8 @@ def generate_primes(m):
                 print("***************************")
         num += 1
 
-#Writes prime list to primes.csv
+#Writes prime list to primes.csv. Be careful, if calling this from the terminal, this will output to where the command
+#is issued from, even if you're calling the script by path. So make sure to call the script from the directory you want the output to
 def write_list(working_list):
     with open('primes.csv', 'a') as myfile:
         wr = csv.writer(myfile)
