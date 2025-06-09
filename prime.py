@@ -2,7 +2,7 @@ import csv,time,shutil,os
 from collections import deque
 
 print(f"Starting at {time.ctime()}")
-interval = 60
+interval = 600
 
 #For each number, this divides it by all numbers from 2 to sqrt(number)+1. If it's divisible by any of them, the number is rejected
 def prime_test(n):
