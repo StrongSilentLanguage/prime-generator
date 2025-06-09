@@ -1,7 +1,8 @@
-import csv,time,shutil,os,alive_progress
+import csv,time,shutil,os
+from collections import deque
 
 print(f"Starting at {time.ctime()}")
-interval = 600
+interval = 60
 
 #For each number, this divides it by all numbers from 2 to sqrt(number)+1. If it's divisible by any of them, the number is rejected
 def prime_test(n):
@@ -9,7 +10,7 @@ def prime_test(n):
         return False
     if n == 2 or n == 3 or n == 5:
         return True
-    if n % 2 == 0 or n % 3 == 0 or n % 5 == 0: #Checks if divisible by 2,3, or 5 - should eliminate ~3/4 of all candidates for speed. Stopping at 5 seems to hit the sweet spot in terms of computation
+    if n % 2 == 0 or n % 3 == 0 or n % 5 == 0: #Checks if divisible by 2,3, or 5 - should eliminate ~3/4 of all candidates for speed. Going past 5 gets into diminishing returns to the point it becoems more computationally intensive than it saves
         return False
     for i in range(7, int(n ** 0.5) + 1,2):
         if n % i == 0:
@@ -52,29 +53,16 @@ def write_list(working_list):
         csvfile.close()
     print(f"Total length of primes.csv: {num_lines:,d}")
     max_value_list = tail_seek("primes.csv", 1)
-    max_value_found = int(
-        max_value_list[0])
+    max_value_found = int(max_value_list[0])
     print(f"Highest prime found: {max_value_found:,d}")
 
 #Pulls out last value from primes.csv in a memory-efficient way. Stole this code, so I don't understand it very well
-def tail_seek(fName, num, bufr=2 ** 24):
-    if bufr < 2 ** 10: bufr = 2 ** 10
-    fsize = os.stat(fName).st_size
-    offset = 0
-    lines = []
-    if fsize < bufr:
-        return tail_seek(fName, num)
-    with open(fName) as f:
-        while True:
-            offset += 1
-            if bufr * offset <= fsize:
-                f.seek(fsize - bufr * offset)
-                lines.extend(f.readlines())
-                if len(lines) >= num + 1 or f.tell() == 0:
-                    break
-            else:
-                break
-    return lines[-num:]
+from collections import deque
+
+def tail_seek(filename, num_lines):
+    with open(filename, 'r') as f:
+        return list(deque(f, num_lines))
+
 
 # Checks if primes.csv exists, then either takes the last value as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
 if os.path.exists("primes.csv"):
@@ -84,5 +72,6 @@ if os.path.exists("primes.csv"):
     print(f"Starting from {max_value_found:,d}")
     generate_primes(max_value_found) #Starts the prime-generation process, passing the last value in primes.csv as the starting value
 else:
+    print("Starting new list")
     generate_primes(1) #If there is no such file found, call function as normal, passing 1 (becomes 2)
 
