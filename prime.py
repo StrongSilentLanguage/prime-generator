@@ -62,7 +62,6 @@ def write_list(working_list):
     print(f"Highest prime found: {max_value_found:,d}")
 
 #Pulls out last value from primes.csv in a memory-efficient way. Stole this code, so I don't understand it very well
-from collections import deque
 
 def tail_seek(filename, num_lines):
     with open(filename, 'r') as f:
