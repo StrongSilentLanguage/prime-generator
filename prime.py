@@ -1,23 +1,21 @@
-import csv,time,shutil,os
+import csv, time, shutil, os, sympy
 from collections import deque
 
 print(f"Starting at {time.ctime()}")
 interval = 600
 
-#For each number, this divides it by all numbers from 2 to sqrt(number)+1. If it's divisible by any of them, the number is rejected
+# For each number, this divides it by all numbers from 2 to sqrt(number)+1. If it's divisible by any of them, the number is rejected
 def prime_test(n):
     if n <= 1:
         return False
     if n == 2 or n == 3 or n == 5:
         return True
-    if n % 2 == 0: #Eliminates even numbers apart from 2
+    if n % 2 == 0: # Eliminates even numbers apart from 2
         return False
-    for i in range(3, int(n ** 0.5) + 1,2):
-        if n % i == 0:
-            return False
-    return True
+    return sympy.isprime(n)
 
-#Iterates from either 2 or the last value in primes.csv, passing each value to prime_test. If prime_test is true, adds the prime to the primes list
+
+# Iterates from either 2 or the last value in primes.csv, passing each value to prime_test. If prime_test is true, adds the prime to the primes list
 def generate_primes(m):
     number_primes_found = 0
     primes = []
@@ -27,7 +25,7 @@ def generate_primes(m):
         if prime_test(num):
             number_primes_found += 1
             primes.append(num)
-            #print(num) #Commented out because it is so voluminous, but it is fun to see so I've left it here. Just uncomment it if you want to see the numbers fly by
+            # print(num) #Commented out because it is so voluminous, but it is fun to see so I've left it here. Just uncomment it if you want to see the numbers fly by
             # Writing list every 10 minutes in order to not lose progress, then empties list to prevent memory filling up
             if time.time() - last_save > interval:
                 print("Saving")
@@ -82,4 +80,3 @@ if os.path.exists("primes.csv"):
 else:
     print("Starting new list")
     generate_primes(1) #If there is no such file found, call function as normal, passing 1 (becomes 2)
-
