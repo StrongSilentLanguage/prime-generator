@@ -4,7 +4,7 @@ primes = []
 random1 = 0
 random2 = 0
 duration_list = []
-
+iterations = 50  # Sets number of times being iterated to get more accurate idea of factoring time
 
 with open('1_million_random_primes.csv', 'r') as csvfile: # Reads list of random prime list into a working list
     reader = csv.reader(csvfile)
@@ -12,11 +12,10 @@ with open('1_million_random_primes.csv', 'r') as csvfile: # Reads list of random
         primes.append(int(n[0]))
     csvfile.close()
 
+
 def gen_primes(primes): # Assigns primes and generates semi-prime for testing
-    random1 = random.randint(0,len(primes))
-    random2 = random.randint(0,len(primes))
-    prime1 = int(primes[random1])
-    prime2 = int(primes[random2])
+    prime1 = int(primes[random.randint(0,len(primes))])
+    prime2 = int(primes[random.randint(0,len(primes))])
     semi_prime = prime1 * prime2
     #print(prime1)
     #print(prime2)
@@ -29,8 +28,6 @@ def prime_break(semi_prime): # Factors the semi-prime
             print("Found it!")
             #print(i)
             break
-
-iterations = 50 # Sets number of times being iterated to get more accurate idea of factoring time
 
 for b in range(1,iterations + 1): # Iterates semi-prime factoring
     start_time = time.time()
