@@ -13,7 +13,7 @@ def prime_test(n):
         return True
     if n > 2 and n % 2 == 0:
         return False
-    for i in range(2, int(n ** 0.5) + 1): #This is a more thorough and computationally intenseive test than the original finder
+    for i in range(2, int(n ** 0.5) + 1): #This is a more thorough and computationally intensive test than the original finder
         if n % i == 0:
             return False
     return True
@@ -62,7 +62,8 @@ with open('primes.csv', 'r') as csvfile:
                     json.dump(data, out_file)
                     out_file.close()
             if prime_test(int(n[0])) is False: #In case there's a composite found, alert the user
-                print(str(num)+ " is composite.")
+                print(f"{num:,d} is composite.")
+                exit() #Stops the program so the alert doesn't get lost. Not sure about this part, there's probably a way to remove it from the file
 
             bar() #Adds progress bar down the bottom
 

@@ -1,8 +1,9 @@
-import csv, time, shutil, os, sympy
-from collections import deque
+import csv, time, os, sympy
+from pathlib import Path
 
 print(f"Starting at {time.ctime()}")
 interval = 600
+
 
 # For each number, this divides it by all numbers from 2 to sqrt(number)+1. If it's divisible by any of them, the number is rejected
 def prime_test(n):
@@ -10,7 +11,7 @@ def prime_test(n):
         return False
     if n == 2 or n == 3 or n == 5:
         return True
-    if n % 2 == 0: # Eliminates even numbers apart from 2
+    if n % 2 == 0:  # Eliminates even numbers apart from 2
         return False
     return sympy.isprime(n)
 
@@ -37,46 +38,69 @@ def generate_primes(m):
                 print("***************************")
         num += 1
 
-#Writes prime list to primes.csv. Be careful, if calling this from the terminal, this will output to where the command
-#is issued from, even if you're calling the script by path. So make sure to call the script from the directory you want the output to
+# Writes prime list to primes.csv. Be careful, if calling this from the terminal, this will output to where the command
+# is issued from, even if you're calling the script by path. So make sure to call the script from the directory you want the output to
+
+
 def write_list(working_list):
     with open('primes.csv', 'a') as myfile:
         wr = csv.writer(myfile)
         for n in working_list:
             wr.writerow([int(n)])
     myfile.close()
-    filename = 'primes.csv'
-    with open(filename, 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        num_lines = sum(1 for _ in reader)
-        csvfile.close()
-    print(f"Total length of primes.csv: {num_lines:,d}")
-    max_value_list = tail_seek("primes.csv", 2) #Thanks for LizzyfoSchmizzy for fixing an error on Windows with this where it would attempt to treat a line-break as an integer
-    if max_value_list[-1] == "\n":
-        val = max_value_list[-2]
+    print("primes.csv updated")
+    # filename = 'primes.csv'
+    # with open(filename, 'r') as csvfile:
+    #     reader = csv.reader(csvfile)
+    #     num_lines = sum(1 for _ in reader)
+    #     csvfile.close()
+    # print(f"Total length of primes.csv: {num_lines:,d}")
+    new_start_value = working_list[-1]
+
+    # max_value_list = tail_seek("primes.csv", 2) #Thanks for LizzyfoSchmizzy for fixing an error on Windows with this where it would attempt to treat a line-break as an integer
+    # if max_value_list[-1] == "\n":
+    #     val = max_value_list[-2]
+    # else:
+    #     val = max_value_list[-1]
+    # max_value_found = int(val)
+    print(f"Highest prime found: {working_list[-1]:,d}")
+    with open('largest_number.csv', 'w') as checkfile:
+        checkfile.write(str(new_start_value))
+    myfile.close()
+    print("largest_number.csv updated")
+
+# Pulls out last value from largest_number.csv in a memory-efficient way. Stole this code, so I don't understand it very well
+
+# def tail_seek(filename, num_lines):
+#     with open(filename, 'r') as f:
+#         return list(deque(f, num_lines))
+
+
+def get_largest_num():
+    start_file = Path("largest_number.csv")
+    if start_file.exists():
+        with open('largest_number.csv', 'r') as csvfile:
+            max_prime = -1
+            for line in csvfile:
+                current_line = int(line)
+                if current_line > max_prime:
+                    max_prime = current_line
+        return max_prime
     else:
-        val = max_value_list[-1]
-    max_value_found = int(val)
-    print(f"Highest prime found: {max_value_found:,d}")
-
-#Pulls out last value from primes.csv in a memory-efficient way. Stole this code, so I don't understand it very well
-
-def tail_seek(filename, num_lines):
-    with open(filename, 'r') as f:
-        return list(deque(f, num_lines))
+        return 1
 
 
-# Checks if primes.csv exists, then either takes the last value as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
+# Checks if primes.csv exists, then either takes value in largest_number.csv as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
 if os.path.exists("primes.csv"):
-    shutil.copy("primes.csv", "primes.csv.bkp") #Creates backup of existing primes.csv to prevent losing progress from error
-    max_value_list = tail_seek("primes.csv", 2) #Thanks for LizzyfoSchmizzy for fixing this error on Windows
-    if max_value_list[-1] == "\n":
-        val = max_value_list[-2]
-    else:
-        val = max_value_list[-1]
-    max_value_found = int(val) #turns the last prime in primes.csv into an integer rather than a list item
+    # shutil.copy("primes.csv", "primes.csv.bkp") #Creates backup of existing primes.csv to prevent losing progress from error
+    # max_value_list = tail_seek("primes.csv", 2) #Thanks for LizzyfoSchmizzy for fixing this error on Windows
+    # if max_value_list[-1] == "\n":
+    #     val = max_value_list[-2]
+    # else:
+    #     val = max_value_list[-1]
+    max_value_found = get_largest_num()  # Pulls out number in largest_number.csv if it exists, else returns 1
     print(f"Starting from {max_value_found:,d}")
-    generate_primes(max_value_found) #Starts the prime-generation process, passing the last value in primes.csv as the starting value
+    generate_primes(max_value_found)  # Starts the prime-generation process, passing the last value in primes.csv as the starting value
 else:
     print("Starting new list")
-    generate_primes(1) #If there is no such file found, call function as normal, passing 1 (becomes 2)
+    generate_primes(1)  # If there is no such file found, call function as normal, passing 1 (becomes 2)
