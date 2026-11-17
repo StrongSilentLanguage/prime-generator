@@ -1,5 +1,6 @@
 import csv, time, os, sympy
 from pathlib import Path
+from collections import deque
 
 print(f"Starting at {time.ctime()}")
 interval = 600
@@ -71,13 +72,14 @@ def write_list(working_list):
 
 # Pulls out last value from largest_number.csv in a memory-efficient way. Stole this code, so I don't understand it very well
 
-# def tail_seek(filename, num_lines):
-#     with open(filename, 'r') as f:
-#         return list(deque(f, num_lines))
+def tail_seek(filename, num_lines):
+    with open(filename, 'r') as f:
+        return list(deque(f, num_lines))
 
 
 def get_largest_num():
     start_file = Path("largest_number.csv")
+    prime_file = Path("primes.csv")
     if start_file.exists():
         with open('largest_number.csv', 'r') as csvfile:
             max_prime = -1
@@ -86,6 +88,12 @@ def get_largest_num():
                 if current_line > max_prime:
                     max_prime = current_line
         return max_prime
+    elif prime_file.exists():
+        max_value_list = tail_seek("primes.csv", 2) #Thanks for LizzyfoSchmizzy for fixing this error on Windows
+        if max_value_list[-1] == "\n":
+            return max_value_list[-2]
+        else:
+            return max_value_list[-1]
     else:
         return 1
 
@@ -93,11 +101,7 @@ def get_largest_num():
 # Checks if primes.csv exists, then either takes value in largest_number.csv as the starting value for generate_primes, or passes 1 (becomes 2) as the starting value
 if os.path.exists("primes.csv"):
     # shutil.copy("primes.csv", "primes.csv.bkp") #Creates backup of existing primes.csv to prevent losing progress from error
-    # max_value_list = tail_seek("primes.csv", 2) #Thanks for LizzyfoSchmizzy for fixing this error on Windows
-    # if max_value_list[-1] == "\n":
-    #     val = max_value_list[-2]
-    # else:
-    #     val = max_value_list[-1]
+
     max_value_found = get_largest_num()  # Pulls out number in largest_number.csv if it exists, else returns 1
     print(f"Starting from {max_value_found:,d}")
     generate_primes(max_value_found)  # Starts the prime-generation process, passing the last value in primes.csv as the starting value
